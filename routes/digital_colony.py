@@ -1,6 +1,7 @@
 import logging
 import json
-
+from multiprocessing import Pool
+import sys
 from flask import request
 
 from routes import app
@@ -10,55 +11,113 @@ logger = logging.getLogger(__name__)
 @app.route('/digital-colony', methods=['POST'])
 def digital_colony():
     data = request.get_json()
-    return_list = []
-    seen = {}
-    req = data[0]
-    # for req in data:
-    generations = int(req["generations"])
-    colony_str = req["colony"]
-    for i in range(generations):
-        seen, colony_str = insert_children(colony_str, seen)
-    weight = 0
-    weight = str(sum(map(int, colony_str)))
-    # for char in colony_str:
-    #     weight += int(char)
-    return_list.append(weight)
-    return_list.append("0")
-    return json.dumps(return_list)
+    final_list = []
+    for req in data:
+        generations = req["generations"]
+        colony = req["colony"]
+        final_list.append(col_calc(generations, colony))
+    return json.dumps(final_list)
 
-def insert_children(number_str: str, seen: dict) -> str:
-    """
-    This function takes a number string and inserts a calculated 'child' 
-    between every two digits in the original string.
-    """
+def col_calc(generations: str, colony: str):
+    # keep track of pairs seen
+    seen = {}
+
+    # calculate weight of colony
+    weight = sum(map(int, colony))
+    # final size of colony
+    final_size = (2**(generations) * 3) + 1
+
+    final_colony_str = [0] * final_size
+    og_diff = int((final_size - 4)/3)
+
+    # instantiating final_colony_str with og numbers
+    current: int = 0
+    for i in range(4):
+        final_colony_str[current] = int(colony[i])
+        current += (og_diff + 1)
+    # instantiate per level 
+    for i in range(generations):
+        level_weight = 0
+        level = i + 1
+        total_insertions = 3 * (2**(level - 1))
+        first_insertion = 2**(generations-level)
+        subsequent_difference = 2**(generations-level+1)
+        border_index_difference = first_insertion
+        previous_index = 0
+        for i in range(total_insertions):
+            if i == 0:
+                previous_index += first_insertion
+            else:
+                previous_index += subsequent_difference
+            # insert at index "previous"
+            left_index = previous_index - border_index_difference
+            right_index = previous_index + border_index_difference
+            left = final_colony_str[left_index]
+            right = final_colony_str[right_index]
+            if (left, right) in seen:
+                final_colony_str[previous_index] = seen[(left, right)]
+            else:
+                signature = left - right if left >= right else 10 - (right - left)
+                final_colony_str[previous_index] = int(str(weight + signature)[-1])
+            level_weight += final_colony_str[previous_index]
+        weight += level_weight
+    return weight
+        
+
+
+
+
+# def digital_colony():
+#     data = request.get_json()
+#     return_list = []
+#     seen = {}
+#     req = data[0]
+#     # for req in data:
+#     generations = int(req["generations"])
+#     colony_str = req["colony"]
+#     for i in range(generations):
+#         seen, colony_str = insert_children(colony_str, seen)
+#     weight = 0
+#     weight = str(sum(map(int, colony_str)))
+#     # for char in colony_str:
+#     #     weight += int(char)
+#     return_list.append(weight)
+#     return_list.append("0")
+#     return json.dumps(return_list)
+
+# def insert_children(number_str: str, seen: dict) -> str:
+#     """
+#     This function takes a number string and inserts a calculated 'child' 
+#     between every two digits in the original string.
+#     """
     
-    # Calculate the weight of the number_str
-    weight = sum(map(int, number_str))
-    # weight = sum(int(num) for num in number_str)
+#     # Calculate the weight of the number_str
+#     weight = sum(map(int, number_str))
+#     # weight = sum(int(num) for num in number_str)
     
-    # Initialize children list to hold the calculated 'children'
-    children = []
+#     # Initialize children list to hold the calculated 'children'
+#     children = []
     
-    number_pair = zip(number_str, number_str[1:]) 
-    if number_pair in seen:
-        children.append(seen[number_pair])
-    else:
-        # Use zip to create pairs of adjacent characters from number_str for processing
-        for first, second in zip(number_str, number_str[1:]):
+#     number_pair = zip(number_str, number_str[1:]) 
+#     if number_pair in seen:
+#         children.append(seen[number_pair])
+#     else:
+#         # Use zip to create pairs of adjacent characters from number_str for processing
+#         for first, second in zip(number_str, number_str[1:]):
             
-            first, second = int(first), int(second)
+#             first, second = int(first), int(second)
             
-            # Calculate the signature based on the difference between adjacent digits
-            signature = first - second if first >= second else 10 - (second - first)
+#             # Calculate the signature based on the difference between adjacent digits
+#             signature = first - second if first >= second else 10 - (second - first)
             
-            # Calculate raw_child and append the last digit to the children list
-            children.append(str(weight + signature)[-1])
+#             # Calculate raw_child and append the last digit to the children list
+#             children.append(str(weight + signature)[-1])
     
-    # Create return string by interleaving the original string and the children string.
-    # Use str.join() for efficient string concatenation.
-    return_string = ''.join([f"{a}{b}" for a, b in zip(number_str, children)] + [number_str[-1]])
+#     # Create return string by interleaving the original string and the children string.
+#     # Use str.join() for efficient string concatenation.
+#     return_string = ''.join([f"{a}{b}" for a, b in zip(number_str, children)] + [number_str[-1]])
     
-    return seen, return_string
+#     return seen, return_string
 
 
 
