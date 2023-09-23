@@ -9,25 +9,6 @@ logger = logging.getLogger(__name__)
 
 @app.route('/digital-colony', methods=['POST'])
 def digital_colony():
-    # data = request.get_json()
-    # results = []
-    # for d in data:
-    #     generations = d['generations']
-    #     colony = d['colony']
-    #     weight = sum(map(int, colony))
-    #     for i in range(generations):
-    #         new_colony = []
-    #         for j in range(len(colony) - 1):
-    #             pair = colony[j:j+2]
-    #             diff = abs(int(pair[0]) - int(pair[1]))
-    #             signature = 10 - diff if diff != 0 else 0
-    #             new_digit = (weight + signature) % 10
-    #             new_colony.append(str(new_digit))
-    #         weight = sum(map(int, new_colony))
-    #         colony = ''.join(new_colony)
-    #     results.append(str(weight))
-    # return results
-
     data = request.get_json()
     return_list = []
     seen = {}
@@ -83,28 +64,28 @@ def insert_children(number_str: str, seen: dict) -> str:
 
 
 
-def insert_children(number_str: str):
-    weight = 0
-    children = []
-    for num in number_str:
-        value = int(num)
-        weight += value
-    for i, num in enumerate(number_str):
-        if i < (len(number_str) - 1):
-            first = int(num)
-            second = int(number_str[i + 1])
-            if first >= second:
-                signature = first - second
-            else:
-                diff = second - first
-                signature = 10 - diff
-            # get child
-            raw_child = str(weight + signature)
-            children.append(raw_child[-1])
-        else: 
-            break
-    return_string = number_str
-    for i, child in enumerate(children):
-        insert_index = (2 * i) + 1
-        return_string = return_string[:insert_index] + child + return_string[insert_index:]
-    return return_string
+# def insert_children(number_str: str):
+#     weight = 0
+#     children = []
+#     for num in number_str:
+#         value = int(num)
+#         weight += value
+#     for i, num in enumerate(number_str):
+#         if i < (len(number_str) - 1):
+#             first = int(num)
+#             second = int(number_str[i + 1])
+#             if first >= second:
+#                 signature = first - second
+#             else:
+#                 diff = second - first
+#                 signature = 10 - diff
+#             # get child
+#             raw_child = str(weight + signature)
+#             children.append(raw_child[-1])
+#         else: 
+#             break
+#     return_string = number_str
+#     for i, child in enumerate(children):
+#         insert_index = (2 * i) + 1
+#         return_string = return_string[:insert_index] + child + return_string[insert_index:]
+#     return return_string
