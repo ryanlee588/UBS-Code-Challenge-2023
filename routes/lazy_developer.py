@@ -17,7 +17,7 @@ def lazy_developer():
   classes = data["classes"]
   statements = data["statements"]
   return_dict = getNextProbableWords(classes, statements)
-  return(return_dict)
+  return(json.dumps(return_dict))
 
 
 # Assumptions:
