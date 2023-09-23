@@ -1,5 +1,6 @@
 
 import logging
+import json
 
 from flask import request
 
@@ -25,4 +26,4 @@ def greedy_monkey():
                     dp[j][k] = max(dp[j][k], dp[j - weight]
                                    [k - volume] + value)
 
-    return dp[w][v]
+    return json.dumps(dp[w][v])
