@@ -34,11 +34,11 @@ def getNextProbableWords(classes: List[Dict],
     for statement in statements:
         parts = statement.split(".")
         """
-    If parts == 1, means it is class name, finish class names
-    If parts == 2, means that we are getting completions of a specific field in a class
-    If parts > 2, means that the target_trie might not be a class, but a field
-    which would require us to get its corresponding type from the field_types dict
-    """
+        If parts == 1, means it is class name, finish class names
+        If parts == 2, means that we are getting completions of a specific field in a class
+        If parts > 2, means that the target_trie might not be a class, but a field
+        which would require us to get its corresponding type from the field_types dict
+        """
         if len(parts) == 1:
             completions = class_tries["root_class_trie"].get_completion(
                 parts[0])
@@ -55,10 +55,10 @@ def getNextProbableWords(classes: List[Dict],
             target_trie = parts[-2]
             prefix = parts[-1]
             """
-      target_trie_parent cannot be used to concatenate as a key for field type if target_trie_parent is a field name. 
-      Need to keep going back to get the originating class to trace the type
-      To check if target_trie_parent is a field name, check if it exists within class tries. If it doesn't, it means it is a field name.
-      """
+            target_trie_parent cannot be used to concatenate as a key for field type if target_trie_parent is a field name. 
+            Need to keep going back to get the originating class to trace the type
+            To check if target_trie_parent is a field name, check if it exists within class tries. If it doesn't, it means it is a field name.
+            """
             if target_trie_parent not in class_tries:
                 current_index = -3
                 root_parent = target_trie_parent
@@ -76,19 +76,19 @@ def getNextProbableWords(classes: List[Dict],
             # Create target_field_key
             target_field_key = target_trie_parent + "_" + target_trie
             """
-      First check if target_field_key is a valid key in field_types, which would
-      mean that our completion is from a field, thus we need to get its corresponding 
-      type from the field_types dict. 
-      
-      If target_field_key is a valid key in field_types, but not in class tries, it means there are no completions as it is either a polymorphic type (i.e. Lists, Dict) or basic type (i.e. String, Double, Float).
+            First check if target_field_key is a valid key in field_types, which would
+            mean that our completion is from a field, thus we need to get its corresponding 
+            type from the field_types dict. 
+            
+            If target_field_key is a valid key in field_types, but not in class tries, it means there are no completions as it is either a polymorphic type (i.e. Lists, Dict) or basic type (i.e. String, Double, Float).
 
-      If target_field_key is not a valid key in field_types, check if the target_trie is 
-      a valid key in class_tries. If target_trie is a valid key in class_tries, it means 
-      that our completion is from a class in the list of classes, thus get completions 
-      using the target_trie Trie. 
+            If target_field_key is not a valid key in field_types, check if the target_trie is 
+            a valid key in class_tries. If target_trie is a valid key in class_tries, it means 
+            that our completion is from a class in the list of classes, thus get completions 
+            using the target_trie Trie. 
 
-      As statement is assumed to be valid, it will not be possible that the statement will not fall into either of these checks.
-      """
+            As statement is assumed to be valid, it will not be possible that the statement will not fall into either of these checks.
+            """
             if target_field_key in field_types:
                 target_field_type = field_types[target_field_key]
                 if target_field_type in class_tries:
