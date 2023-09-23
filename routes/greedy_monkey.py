@@ -23,15 +23,15 @@ def greedy_monkey():
     dp = np.zeros((w + 1, v + 1), dtype=int)
 
     for weight, volume, value in f:
-        # We are only updating the dp array for valid weight and volume indices,
-        # thus avoiding the need for the second and third nested loops
+        # We update the dp array for valid weight and volume indices,
+        # avoiding the need for the second and third nested loops
         dp[weight:, volume:] = np.maximum(
             dp[weight:, volume:],
             dp[:w - weight + 1, :v - volume + 1] + value
         )
 
-    return json.dumps(int(dp[w, w]))
-
+    result = int(dp[w, v])
+    return json.dumps(result)
 
     # # Initialize a 2D array to store the maximum value for each (weight, volume) pair
     # dp = [[0] * (v + 1) for _ in range(w + 1)]

@@ -10,53 +10,77 @@ logger = logging.getLogger(__name__)
 @app.route('/digital-colony', methods=['POST'])
 def digital_colony():
     data = request.get_json()
-    return_list = []
-    seen = {}
-    for req in data:
-        generations = int(req["generations"])
-        colony_str = req["colony"]
+    results = []
+    for d in data:
+        generations = d['generations']
+        colony = d['colony']
+        weight = sum(map(int, colony))
         for i in range(generations):
-            seen, colony_str = insert_children(colony_str, seen)
-        weight = 0
-        weight = str(sum(map(int, colony_str)))
-        # for char in colony_str:
-        #     weight += int(char)
-        return_list.append(weight)
-    return json.dumps(return_list)
+            new_colony = []
+            for j in range(len(colony) - 1):
+                pair = colony[j:j+2]
+                diff = abs(int(pair[0]) - int(pair[1]))
+                signature = 10 - diff if diff != 0 else 0
+                new_digit = (weight + signature) % 10
+                new_colony.append(str(new_digit))
+            weight = sum(map(int, new_colony))
+            colony = ''.join(new_colony)
+        results.append(str(weight))
+    return results
 
-def insert_children(number_str: str, seen: dict) -> str:
-    """
-    This function takes a number string and inserts a calculated 'child' 
-    between every two digits in the original string.
-    """
+
+
+
+
+
+#     data = request.get_json()
+#     return_list = []
+#     seen = {}
+#     for req in data:
+#         generations = int(req["generations"])
+#         colony_str = req["colony"]
+#         for i in range(generations):
+#             seen, colony_str = insert_children(colony_str, seen)
+#         weight = 0
+#         weight = str(sum(map(int, colony_str)))
+#         # for char in colony_str:
+#         #     weight += int(char)
+#         return_list.append(weight)
+#     return json.dumps(return_list)
+
+# def insert_children(number_str: str, seen: dict) -> str:
+#     """
+#     This function takes a number string and inserts a calculated 'child' 
+#     between every two digits in the original string.
+#     """
     
-    # Calculate the weight of the number_str
-    weight = sum(map(int, number_str))
-    # weight = sum(int(num) for num in number_str)
+#     # Calculate the weight of the number_str
+#     weight = sum(map(int, number_str))
+#     # weight = sum(int(num) for num in number_str)
     
-    # Initialize children list to hold the calculated 'children'
-    children = []
+#     # Initialize children list to hold the calculated 'children'
+#     children = []
     
-    number_pair = zip(number_str, number_str[1:]) 
-    if number_pair in seen:
-        children.append(seen[number_pair])
-    else:
-        # Use zip to create pairs of adjacent characters from number_str for processing
-        for first, second in zip(number_str, number_str[1:]):
+#     number_pair = zip(number_str, number_str[1:]) 
+#     if number_pair in seen:
+#         children.append(seen[number_pair])
+#     else:
+#         # Use zip to create pairs of adjacent characters from number_str for processing
+#         for first, second in zip(number_str, number_str[1:]):
             
-            first, second = int(first), int(second)
+#             first, second = int(first), int(second)
             
-            # Calculate the signature based on the difference between adjacent digits
-            signature = first - second if first >= second else 10 - (second - first)
+#             # Calculate the signature based on the difference between adjacent digits
+#             signature = first - second if first >= second else 10 - (second - first)
             
-            # Calculate raw_child and append the last digit to the children list
-            children.append(str(weight + signature)[-1])
+#             # Calculate raw_child and append the last digit to the children list
+#             children.append(str(weight + signature)[-1])
     
-    # Create return string by interleaving the original string and the children string.
-    # Use str.join() for efficient string concatenation.
-    return_string = ''.join([f"{a}{b}" for a, b in zip(number_str, children)] + [number_str[-1]])
+#     # Create return string by interleaving the original string and the children string.
+#     # Use str.join() for efficient string concatenation.
+#     return_string = ''.join([f"{a}{b}" for a, b in zip(number_str, children)] + [number_str[-1]])
     
-    return seen, return_string
+#     return seen, return_string
 
 
 
