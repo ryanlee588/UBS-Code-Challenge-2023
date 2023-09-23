@@ -114,5 +114,5 @@ def getNextProbableWords(classes: List[Dict],
                 completions_dict[statement] = sorted_completions
         except Exception as err:
             print(str(err))
-            completions_dict[statement] = []
+            completions_dict[statement] = [""]
     return completions_dict
