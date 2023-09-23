@@ -6,7 +6,7 @@ from routes import app
 
 logger = logging.getLogger(__name__)
 
-app.route('/chinese-wall', methods=['POST'])
+app.route('/chinese-wall', methods=['GET'])
 def password_response():
     password_dict = {
         "1": "Fluffy",
