@@ -7,3 +7,4 @@ import routes.lazy_developer
 import routes.greedy_monkey
 import routes.digital_colony
 import routes.railway_builder
+import routes.chinese_wall
