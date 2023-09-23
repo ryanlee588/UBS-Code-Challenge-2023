@@ -27,5 +27,5 @@ def greedy_monkey():
                 else:
                     dp[i][j][k] = dp[i - 1][j][k]
 
-    return dp[n][w][v]
+    return json.dumps(dp[n][w][v])
 
