@@ -45,7 +45,10 @@ def getNextProbableWords(classes: List[Dict],
     elif len(parts) == 2:
       target_trie = parts[0]
       prefix = parts[1]
-      completions = class_tries[target_trie].get_completion(prefix)
+      if target_trie in class_tries:
+        completions = class_tries[target_trie].get_completion(prefix)
+      else:
+        completions = []
     elif len(parts) > 2:
       target_trie_parent = parts[-3]
       target_trie = parts[-2]
